@@ -1,0 +1,19 @@
+{
+  "name": "excel-json-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "excel2json": "bin/excel2json.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^9.2.0",
+    "node-xlsx": "^0.21.0"
+  }
+}
