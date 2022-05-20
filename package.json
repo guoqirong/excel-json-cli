@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "excel2json": "bin/excel-to-json.js"
+    "excel2json": "bin/excel-to-json.js",
+    "json2excel": "bin/json-to-excel.js"
   },
   "keywords": [],
   "author": "",
