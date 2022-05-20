@@ -13,7 +13,7 @@ program
 
 // 自定义选项参数
 program
-  .option('-i, --input <path>', '必填，输入文件路径及后缀配置，文件名以**代替，文件支持ts、js和json，如：./**.ts')
+  .option('-i, --input <path>', '必填，输入文件路径及后缀配置，文件名以**代替，文件支持ts、js和json文件，如：./**.ts')
   .option('-o, --output <file>', '选填，输出要导成的xls、xlsx文件，可带路径，默认为local.xls', 'local.xls')
   .helpOption('-h, --help', '查看命令帮助文档');
 
