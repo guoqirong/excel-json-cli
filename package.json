@@ -1,8 +1,9 @@
 {
-  "name": "excel-json-cli",
+  "name": "excel-json-cli1",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "private": false,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,7 +11,18 @@
     "excel2json": "bin/excel-to-json.js",
     "json2excel": "bin/json-to-excel.js"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:guoqirong/excel-json-cli.git"
+  },
+  "keywords": [
+    "excel2json",
+    "json2excel",
+    "json",
+    "excel",
+    "xlsx",
+    "xls"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
