@@ -7,13 +7,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "excel2json": "bin/excel2json.js"
+    "excel2json": "bin/excel-to-json.js",
+    "json2excel": "bin/json-to-excel.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "commander": "^9.2.0",
+    "fs": "^0.0.1-security",
     "node-xlsx": "^0.21.0"
   }
 }
