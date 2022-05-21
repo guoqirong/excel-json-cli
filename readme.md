@@ -27,10 +27,10 @@
 
 文档
 
-| key      | zh-CNzh-CN | ar-ARar-AR | de-DEde-DE | en-USen-US | es-ESes-ES | fr-FRfr-FR | id-ID    | ms-MS    | pt-PT     | ru-RU   | th-TH  | tr-TR   | vi-VI    | zh-HK | zh-TW |
-| -------- | ---------- | ---------- | ---------- | ---------- | ---------- | ---------- | -------- | -------- | --------- | ------- | ------ | ------- | -------- | ----- | ----- |
-| France   | 法国       | فرنسا      | Frankreich | France     | Francia    | France     | Prancis  | Perancis | França    | Франция | ฝรั่งเศส | Fransa  | Pháp     | 法國  | 法國  |
-| Thailand | 泰国       | تايلاند    | Thailand   | Thailand   | Tailandia  | Thaïlande  | Thailand | Thailand | Tailândia | Таиланд | ไทย    | Tayland | Thái Lan | 泰國  | 泰國  |
+| key      | zh-CN | ar-AR   | de-DE      | en-US    | es-ES     | fr-FR     | id-ID    | ms-MS    | pt-PT     | ru-RU   | th-TH  | tr-TR   | vi-VI    | zh-HK | zh-TW |
+| -------- | ----- | ------- | ---------- | -------- | --------- | --------- | -------- | -------- | --------- | ------- | ------ | ------- | -------- | ----- | ----- |
+| France   | 法国  | فرنسا   | Frankreich | France   | Francia   | France    | Prancis  | Perancis | França    | Франция | ฝรั่งเศส | Fransa  | Pháp     | 法國  | 法國  |
+| Thailand | 泰国  | تايلاند | Thailand   | Thailand | Tailandia | Thaïlande | Thailand | Thailand | Tailândia | Таиланд | ไทย    | Tayland | Thái Lan | 泰國  | 泰國  |
 
 命令
 
