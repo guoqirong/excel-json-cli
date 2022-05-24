@@ -1,6 +1,6 @@
 {
   "name": "excel-json-cli1",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "private": false,
@@ -26,6 +26,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^4.1.2",
     "commander": "^9.2.0",
     "fs": "^0.0.1-security",
     "node-xlsx": "^0.21.0"
