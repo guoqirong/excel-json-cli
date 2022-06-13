@@ -1,8 +1,8 @@
-const xlsx = require('node-xlsx');
+import xlsx from 'node-xlsx';
 const fs = require('fs');
 const chalk = require('chalk');
 
-function dataToJson(data, rule) {
+function dataToJson(data: any[], rule: { split: (arg0: string) => [any, any]; }) {
   /**
    * excel读取规制解析，文件名为第一行(小写字母-大写字母 或 整个单元格内容)
    * rule 0:[4,15]表示第一列为语言key，第五列到第十九列为语言包数据，默认为0:[1,整行数据长度]
@@ -10,11 +10,11 @@ function dataToJson(data, rule) {
   const [key, interval] = rule.split(':');
   const intervals = interval ? JSON.parse(interval) : [1];
   // 记录文件导成json的数据
-  let jsonData={};
+  let jsonData:any = {};
   data.forEach(sheet => {
     // 记录每个标签页的语言key
-    let fileKeys = [];
-    sheet.data.forEach((row, rowi) => {
+    let fileKeys: any[] = [];
+    sheet.data.forEach((row: any[], rowi: number) => {
       if (rowi === 0) {
         // 按第一行生成语言对象key
         row.splice(intervals[0], intervals[1] ?? row.length).forEach((col, coli) => {
@@ -34,7 +34,7 @@ function dataToJson(data, rule) {
   return jsonData;
 }
 
-function writeFile(jsonData, output, add) {
+function writeFile(jsonData: { [x: string]: any; }, output: { split: (arg0: string) => [any, any]; }, add: any) {
   // 获取输出路径及文件类型，默认为单前文件夹ts文件
   const [path, suffix] = output.split('**');
   // 需要export的文件类型
@@ -52,9 +52,9 @@ function writeFile(jsonData, output, add) {
       }
     }
     // 格式化json数据
-    const data = (isExportType.includes(suffix) ? 'export default ' : '') + JSON.stringify({...old, ...jsonData[key]}, '', '  ');
+    const data = (isExportType.includes(suffix) ? 'export default ' : '') + JSON.stringify({...old, ...jsonData[key]}, undefined, '  ');
     // 文件写入
-    fs.writeFile(path + key + suffix, data, (err) => {
+    fs.writeFile(path + key + suffix, data, (err: any) => {
       if (err) {
         console.error(chalk.red(err));
       }
@@ -62,15 +62,11 @@ function writeFile(jsonData, output, add) {
   });
 }
 
-function excel2json(options) {
+export function excel2json(options: { input: any; rule: { split: (arg0: string) => [any, any]; }; output: { split: (arg0: string) => [any, any]; }; add: any; }) {
   // 读取文件
   const workSheetsFromFile = xlsx.parse(options.input);
   // 将数组转成json对象
   const jsonData = dataToJson(workSheetsFromFile, options.rule);
   // 将对象写入文件
   writeFile(jsonData, options.output, options.add);
-}
-
-module.exports = {
-  excel2json
 }

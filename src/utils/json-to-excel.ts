@@ -1,20 +1,20 @@
+import xlsx, { WorkSheet } from 'node-xlsx';
 const fs = require('fs');
-const xlsx = require('node-xlsx');
 const chalk = require('chalk');
 
-function readDirFilesData(input) {
+function readDirFilesData(input: { split: (arg0: string) => [any, any]; }) {
   // 获取输输入路径及文件类型
   const [path, suffix] = input.split('**');
   // 需要export的文件类型
   const isExportType = ['.ts', '.js'];
   console.log('数据读取中，请稍后...');
   // 读取文件夹文件列表
-  const files = fs.readdirSync(path || './').filter(item => {
+  const files = fs.readdirSync(path || './').filter((item: string) => {
     return item.endsWith(suffix);
   })
-  let data = {};
+  let data:any = {};
   // 将文件数据转成json数据
-  files.forEach(file => {
+  files.forEach((file: string) => {
     let fileData = fs.readFileSync(path + file, { flag: 'r', encoding: 'utf-8' });
     fileData = fileData.replace(/\;/g, '');
     try {
@@ -26,11 +26,12 @@ function readDirFilesData(input) {
   return data;
 }
 
-function writeFileToExcel(data, output) {
+function writeFileToExcel(data: { [x: string]: { [x: string]: any; }; }, output: any) {
   // 表格初始数据
-  const fileData = [{
+  const fileData: WorkSheet<string>[] = [{
     name: 'all data',
-    data: []
+    data: [],
+    options: {}
   }];
   // 表格首行数据
   let firstRow = ['key'];
@@ -58,20 +59,16 @@ function writeFileToExcel(data, output) {
   // 将数据转成文件buffer
   const buffer = xlsx.build(fileData);
   // 文件写入
-  fs.writeFile(output, Buffer.from(buffer), (err) => {
+  fs.writeFile(output, Buffer.from(buffer), (err: any) => {
     if (err) {
       console.error(chalk.red(err));
     }
   });
 }
 
-function json2excel(options) {
+export function json2excel(options: { input: any; output: any; }) {
   // 读取文件夹数据
   const filesData = readDirFilesData(options.input);
   // 将数据写入excel文件
   writeFileToExcel(filesData, options.output);
-}
-
-module.exports = {
-  json2excel
 }
