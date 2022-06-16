@@ -1,8 +1,9 @@
 import xlsx, { WorkSheet } from 'node-xlsx';
-const fs = require('fs');
+import * as fs from 'fs-extra';
+import { OptionValues } from 'commander';
 const chalk = require('chalk');
 
-function readDirFilesData(input: { split: (arg0: string) => [any, any]; }) {
+function readDirFilesData(input: string) {
   // 获取输输入路径及文件类型
   const [path, suffix] = input.split('**');
   // 需要export的文件类型
@@ -26,7 +27,7 @@ function readDirFilesData(input: { split: (arg0: string) => [any, any]; }) {
   return data;
 }
 
-function writeFileToExcel(data: { [x: string]: { [x: string]: any; }; }, output: any) {
+function writeFileToExcel(data: { [x: string]: { [x: string]: any; }; }, output: string) {
   // 表格初始数据
   const fileData: WorkSheet<string>[] = [{
     name: 'all data',
@@ -66,7 +67,7 @@ function writeFileToExcel(data: { [x: string]: { [x: string]: any; }; }, output:
   });
 }
 
-export function json2excel(options: { input: any; output: any; }) {
+export function json2excel(options: OptionValues) {
   // 读取文件夹数据
   const filesData = readDirFilesData(options.input);
   // 将数据写入excel文件

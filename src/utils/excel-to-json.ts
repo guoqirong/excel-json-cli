@@ -1,8 +1,9 @@
 import xlsx from 'node-xlsx';
-const fs = require('fs');
+import * as fs from 'fs-extra';
+import { OptionValues } from 'commander';
 const chalk = require('chalk');
 
-function dataToJson(data: any[], rule: { split: (arg0: string) => [any, any]; }) {
+function dataToJson(data: any[], rule: string) {
   /**
    * excel读取规制解析，文件名为第一行(小写字母-大写字母 或 整个单元格内容)
    * rule 0:[4,15]表示第一列为语言key，第五列到第十九列为语言包数据，默认为0:[1,整行数据长度]
@@ -24,9 +25,9 @@ function dataToJson(data: any[], rule: { split: (arg0: string) => [any, any]; })
       } else {
         // 将第一行一下的数据生成语言json对象
         row.splice(intervals[0], intervals[1] ?? row.length).forEach((col, coli) => {
-          console.log(chalk.green(`${sheet.name} | ${fileKeys[coli]} | ${row[key]} | ${col}`));  // 打印数据日志
-          if(!fileKeys[coli] || !row[key]) return; // 没有文件key 或 数据key，跳过该列
-          jsonData[fileKeys[coli]][row[key]] = col;  // 设置每行数据到对应语言对象
+          console.log(chalk.green(`${sheet.name} | ${fileKeys[coli]} | ${row[key as any]} | ${col}`));  // 打印数据日志
+          if(!fileKeys[coli] || !row[key as any]) return; // 没有文件key 或 数据key，跳过该列
+          jsonData[fileKeys[coli]][row[key as any]] = col;  // 设置每行数据到对应语言对象
         });
       }
     });
@@ -34,7 +35,7 @@ function dataToJson(data: any[], rule: { split: (arg0: string) => [any, any]; })
   return jsonData;
 }
 
-function writeFile(jsonData: { [x: string]: any; }, output: { split: (arg0: string) => [any, any]; }, add: any) {
+function writeFile(jsonData: { [x: string]: any; }, output: string, add: any) {
   // 获取输出路径及文件类型，默认为单前文件夹ts文件
   const [path, suffix] = output.split('**');
   // 需要export的文件类型
@@ -62,7 +63,7 @@ function writeFile(jsonData: { [x: string]: any; }, output: { split: (arg0: stri
   });
 }
 
-export function excel2json(options: { input: any; rule: { split: (arg0: string) => [any, any]; }; output: { split: (arg0: string) => [any, any]; }; add: any; }) {
+export function excel2json(options: OptionValues) {
   // 读取文件
   const workSheetsFromFile = xlsx.parse(options.input);
   // 将数组转成json对象
