@@ -3,7 +3,7 @@
 import { json2excel } from "../utils/json-to-excel";
 import { Command } from 'commander';
 
-const packageDataJ2E = require('../../package.json');
+import packageDataJ2E from '../../package.json';
 
 const program = new Command();
 
