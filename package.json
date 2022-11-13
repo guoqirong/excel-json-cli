@@ -1,6 +1,6 @@
 {
   "name": "excel-json-cli1",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "",
   "main": "index.js",
   "private": false,
@@ -10,8 +10,8 @@
     "pub": "npm run build && npm publish"
   },
   "bin": {
-    "excel2json": "lib/bin/excel-to-json.js",
-    "json2excel": "lib/bin/json-to-excel.js"
+    "excel2json": "lib/src/bin/excel-to-json.js",
+    "json2excel": "lib/src/bin/json-to-excel.js"
   },
   "repository": {
     "type": "git",

@@ -5,7 +5,10 @@
     "outDir": "./lib",
     "strict": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": ["dom", "es2022"], 
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"],
   },
   "exclude": [
     "node_modules",
