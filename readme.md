@@ -14,7 +14,9 @@
 | -i, --input \<file\>                        | 必填，输入要导成json的xls、xlsx文件，可带路径                |
 | -r, --rule \<key-col-num:key-col-interval\> | 选填，解析表格规制，key-col-num为数据key列索引，key-col-interval为数据范围 （如：0:[4,15]表示第一列为key，第五列到第十九列为数据），默认为0:[1] |
 | -a, --add                                   | 选填，增量导出数据，先获取原有数据                           |
-| -o, --output \<path\>                       | 选填，输出文件路径及后缀配置，文件名以\**代替，文件存储路径必须存在，默认为./**.ts |
+| -nmf, --not-match-filename                  | 选填，不检验文件或文件夹名称为小写字母-大写字母              |
+| -k, --key                                   | 选填，已key为主体导出数据，没值时为空字符串                  |
+| -o, --output \<path\>                       | 选填，选填，输出文件路径及后缀配置(ts/js/json)，文件名或文件夹以\**代替，文件存储路径不存在则自动创建，默认为./**.ts |
 | -h, --help                                  | 查看命令帮助文档                                             |
 
 ### 命令说明
@@ -36,6 +38,8 @@
 
 `excel2json -i ./local.xlsx -o ./**.ts -r 0:[1,15] -a`
 
+`excel2json -i ./local.xlsx -o ./**/file.json -r 0:[3,15] -a -k -nmf`
+
 ## 2、json2excel 命令
 
 用于把表格数据导成json数据，可支持json、ts和js。
@@ -45,7 +49,7 @@
 | 选项                  | 说明                                                         |
 | --------------------- | ------------------------------------------------------------ |
 | -v, --version         | 查看工具版本                                                 |
-| -i, --input <path\>   | 必填，输入文件路径及后缀配置，文件名以\**代替，文件支持ts、js和json文件，如：./**.ts |
+| -i, --input <path\>   | 必填，输入文件路径及后缀配置，文件名或文件夹以\**代替，文件支持ts、js和json文件，如：./\*\*.ts、./**/file.json |
 | -o, --output \<file\> | 选填，输出要导成的xls、xlsx文件，可带路径，默认为local.xls (default: "local.xls") |
 | -h, --help            | 查看命令帮助文档                                             |
 
@@ -69,4 +73,6 @@ ts文件示例
 
 命令
 
-`json2excel -i ./**.ts -o local.xlsx  `
+`json2excel -i ./**.ts -o local.xlsx`
+
+`json2excel -i ./**/file.json -o local-cs.xlsx`

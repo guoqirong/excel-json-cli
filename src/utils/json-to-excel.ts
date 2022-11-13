@@ -5,23 +5,31 @@ const chalk = require('chalk');
 
 function readDirFilesData(input: string) {
   // 获取输输入路径及文件类型
-  const [path, suffix] = input.split('**');
+  const [path, fileOrSuffix] = input.split('**');
+  const [filename, suffix] = fileOrSuffix.split('.');
   // 需要export的文件类型
-  const isExportType = ['.ts', '.js'];
+  const isExportType = ['ts', 'js'];
   console.log('数据读取中，请稍后...');
   // 读取文件夹文件列表
   const files = fs.readdirSync(path || './').filter((item: string) => {
+    if (filename) {
+      const d = fs.statSync(path + item)
+      return d.isDirectory();
+    }
     return item.endsWith(suffix);
   })
   let data:any = {};
   // 将文件数据转成json数据
-  files.forEach((file: string) => {
-    let fileData = fs.readFileSync(path + file, { flag: 'r', encoding: 'utf-8' });
-    fileData = fileData.replace(/\;/g, '');
-    try {
-      data[file.split('.')[0]] = isExportType.includes(suffix) ? eval('(' + fileData.split('export default ')[1] + ')') : JSON.parse(fileData);
-    } catch (error) {
-      console.error(chalk.red(file, '该文件不是json，无法导出'))
+  files.forEach(async (file: string) => {
+    const checkFile = fs.existsSync(filename? path + file + fileOrSuffix : path + file);
+    if (checkFile) {
+      let fileData = fs.readFileSync(filename? path + file + fileOrSuffix : path + file, { flag: 'r', encoding: 'utf-8' });
+      fileData = fileData.replace(/\;/g, '');
+      try {
+        data[file.split('.')[0]] = isExportType.includes(suffix) ? eval('(' + fileData.split('export default ')[1] + ')') : JSON.parse(fileData);
+      } catch (error) {
+        console.error(chalk.red(file, '该文件不是json，无法导出'))
+      }
     }
   });
   return data;
@@ -59,10 +67,32 @@ function writeFileToExcel(data: { [x: string]: { [x: string]: any; }; }, output:
   fileData[0].data.unshift(firstRow);
   // 将数据转成文件buffer
   const buffer = xlsx.build(fileData);
-  // 文件写入
-  fs.writeFile(output, Buffer.from(buffer), (err: any) => {
-    if (err) {
-      console.error(chalk.red(err));
+  // 查看文件夹是否存在
+  let paths = output.split('/');
+  paths = paths.splice(0, paths.length - 1);
+  const path = paths.join('/');
+  fs.stat(path, async (_, stats) => {
+    if (!stats) {
+      // 不存在创建文件夹
+      await fs.mkdir(path, {recursive: true}, err => {
+        if (err) {
+          console.error(chalk.red(err));
+        } else {
+          // 文件写入
+          fs.writeFile(output, Buffer.from(buffer), (err: any) => {
+            if (err) {
+              console.error(chalk.red(err));
+            }
+          });
+        }
+      });
+    } else {
+      // 文件写入
+      fs.writeFile(output, Buffer.from(buffer), (err: any) => {
+        if (err) {
+          console.error(chalk.red(err));
+        }
+      });
     }
   });
 }
