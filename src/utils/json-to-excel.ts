@@ -70,7 +70,7 @@ function writeFileToExcel(data: { [x: string]: { [x: string]: any; }; }, output:
   // 查看文件夹是否存在
   let paths = output.split('/');
   paths = paths.splice(0, paths.length - 1);
-  const path = paths.join('/');
+  const path = paths.join('/') || './';
   fs.stat(path, async (_, stats) => {
     if (!stats) {
       // 不存在创建文件夹
