@@ -1,7 +1,10 @@
 import xlsx from 'node-xlsx';
 import * as fs from 'fs-extra';
 import { OptionValues } from 'commander';
-const chalk = require('chalk');
+import chalk from 'chalk';
+import { isExportType, typeToName } from '../constants';
+import { format } from 'prettier';
+import { prettierConfig } from '../constants/prettierrc';
 
 function dataToJson(data: any[], {
   rule,
@@ -59,8 +62,6 @@ function writeFile(jsonData: { [x: string]: any; }, output: string, add: any) {
   // 获取输出路径及文件类型，默认为单前文件夹ts文件
   const [path, fileOrSuffix] = output.split('**');
   const [filename, suffix] = fileOrSuffix.split('.');
-  // 需要export的文件类型
-  const isExportType = ['ts', 'js'];
   Object.keys(jsonData).forEach(key => {
     console.log('正在写入文件:', path + key + fileOrSuffix);
     let old = {};
@@ -79,25 +80,37 @@ function writeFile(jsonData: { [x: string]: any; }, output: string, add: any) {
     fs.stat(path + key, async (_, stats) => {
       if (!stats && filename) {
         // 不存在创建文件夹
-        await fs.mkdir(path + key, {recursive: true}, err => {
+        fs.mkdir(path + key, { recursive: true }, err => {
           if (err) {
             console.error(chalk.red(err));
           } else {
             // 文件写入
-            fs.writeFile(path + key + fileOrSuffix, data, (err: any) => {
-              if (err) {
-                console.error(chalk.red(err));
+            fs.writeFile(
+              path + key + fileOrSuffix,
+              format(data, {
+                parser: typeToName[suffix] ?? 'typescript',
+                ...prettierConfig
+              }), (err: any) => {
+                if (err) {
+                  console.error(chalk.red(err));
+                }
               }
-            });
+            );
           }
         });
       } else {
         // 文件写入
-        fs.writeFile(path + key + fileOrSuffix, data, (err: any) => {
-          if (err) {
-            console.error(chalk.red(err));
+        fs.writeFile(
+          path + key + fileOrSuffix,
+          format(data, {
+            parser: typeToName[suffix] ?? 'typescript',
+            ...prettierConfig
+          }), (err: any) => {
+            if (err) {
+              console.error(chalk.red(err));
+            }
           }
-        });
+        );
       }
     });
   });
