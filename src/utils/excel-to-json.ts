@@ -71,7 +71,7 @@ function writeFile(jsonData: { [x: string]: any; }, output: string, add: any) {
         const fileData = fs.readFileSync(path + key + fileOrSuffix, { flag: 'r', encoding: 'utf-8' }).replace(/\;/g, '');
         old = isExportType.includes(suffix) ? eval('(' + fileData.split('export default ')[1] + ')') : JSON.parse(fileData);
       } catch (error) {
-        console.error(chalk.red('不出在源文件:', path + key + fileOrSuffix, '，改文件只有单前文档数据'))
+        console.error(chalk.red('不存在源文件:', path + key + fileOrSuffix, '，改文件只有单前文档数据'))
       }
     }
     // 格式化json数据

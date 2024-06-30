@@ -45,21 +45,28 @@ function writeFileToExcel(data: { [x: string]: { [x: string]: any; }; }, output:
   // 表格首行数据
   let firstRow = ['key'];
   // 记入第一个文件的数据key
-  const datakeys = Object.keys(data[Object.keys(data)[0]]);
-  Object.keys(data).forEach(key => {
+  let datakeys = Object.keys(data[Object.keys(data)[0]]);
+  Object.keys(data).forEach((key, i) => {
     // 设置表格首行数据
     firstRow.push(key);
-    // 比对导出文佳的差异性
-    console.log('比', firstRow[1], '文件少字段', key, datakeys.filter(dk => !Object.keys(data[key]).includes(dk)));
-    console.log('比', firstRow[1], '文件多字段', key, Object.keys(data[key]).filter(dk => !datakeys.includes(dk)));
-    Object.keys(data[key]).forEach((item, i) => {
-      // 初始每行数据，加入对应可以值
-      if(!fileData[0].data[i]) {
-        fileData[0].data.push([item]);
-      };
-      // 设置对应key的数据值
+    // 合并补充第一个文件不存在的key
+    datakeys = datakeys.concat(Object.keys(data[key]).filter(dk => !datakeys.includes(dk)));
+    Object.keys(data[key]).forEach(item => {
       const dataIndex = fileData[0].data.findIndex(di => di[0] === item);
-      fileData[0].data[dataIndex].push(data[key][item]);
+      // 初始每行数据，加入对应可以值
+      if(dataIndex === -1) {
+        const data = new Array(i + 1).fill('');
+        data[0] = item;
+        fileData[0].data.push(data);
+      };
+      // 补充缺少数据
+      if (i + 1 > fileData[0].data[dataIndex !== -1 ? dataIndex : (fileData[0].data?.length - 1)].length) {
+        const notDataNum = i + 1 - fileData[0].data[dataIndex !== -1 ? dataIndex : (fileData[0].data?.length - 1)].length;
+        const data = new Array(notDataNum).fill('');
+        fileData[0].data[dataIndex !== -1 ? dataIndex : (fileData[0].data?.length - 1)] = fileData[0].data[dataIndex !== -1 ? dataIndex : (fileData[0].data?.length - 1)].concat(data);
+      }
+      // 设置对应key的数据值
+      fileData[0].data[dataIndex !== -1 ? dataIndex : (fileData[0].data?.length - 1)].push(data[key][item]);
     });
   });
   console.log('文件写入中，请稍后...');
