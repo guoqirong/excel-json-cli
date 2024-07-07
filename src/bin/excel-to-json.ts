@@ -19,6 +19,7 @@ program
   .option('-a, --add', '选填，增量导出数据，先获取原有数据')
   .option('-nmf, --not-match-filename', '选填，不检验文件或文件夹名称为小写字母-大写字母')
   .option('-k, --key', '选填，已key为主体导出数据，没值时为空字符串')
+  .option('-mod, --multilevel-object-deconstruct', '选填，将key以“.”分隔的数据转成多层对象')
   .option('-o, --output <path>', '选填，输出文件路径及后缀配置(ts/js/json)，文件名或文件夹以**代替，文件存储路径不存在则自动创建，默认为./**.ts', './**.ts')
   .helpOption('-h, --help', '查看命令帮助文档');
 
