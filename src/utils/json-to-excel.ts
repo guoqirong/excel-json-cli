@@ -4,7 +4,7 @@ import { OptionValues } from 'commander';
 import chalk from 'chalk';
 import { isExportType } from '../constants';
 
-function readDirFilesData(input: string) {
+const readDirFilesData = (input: string) => {
   // 获取输输入路径及文件类型
   const [path, fileOrSuffix] = input.split('**');
   const [filename, suffix] = fileOrSuffix.split('.');
@@ -35,7 +35,44 @@ function readDirFilesData(input: string) {
   return data;
 }
 
-function writeFileToExcel(data: { [x: string]: { [x: string]: any; }; }, output: string) {
+const multilevelObjectDeconstruct = (
+  fileData: WorkSheet<string>[],
+  data: { [x: string]: any; },
+  datakeys: string[],
+  pKey: string,
+  langi: number
+) => {
+  Object.keys(data).forEach(item => {
+    if (typeof data[item] === 'object') {
+      multilevelObjectDeconstruct(fileData, data[item], datakeys, `${pKey}.${item}`, langi);
+      return ;
+    }
+    const dataIndex = fileData[0].data.findIndex(di => di[0] === `${pKey}.${item}`);
+    // 初始每行数据，加入对应可以值
+    if(dataIndex === -1) {
+      const data = new Array(langi + 1).fill('');
+      data[0] = `${pKey}.${item}`;
+      fileData[0].data.push(data);
+    };
+    const di = dataIndex !== -1 ? dataIndex : (fileData[0].data?.length - 1);
+    // 补充缺少数据
+    if (langi + 1 > fileData[0].data[di].length) {
+      const notDataNum = langi + 1 - fileData[0].data[di].length;
+      const data = new Array(notDataNum).fill('');
+      fileData[0].data[di] = fileData[0].data[di].concat(data);
+    }
+    // 设置对应key的数据值
+    fileData[0].data[di].push(data[item]);
+  });
+}
+
+const writeFileToExcel = (data: { [x: string]: { [x: string]: any; }; }, {
+  output,
+  isMoToSo
+}: {
+  output: string;
+  isMoToSo: boolean
+}) => {
   // 表格初始数据
   const fileData: WorkSheet<string>[] = [{
     name: 'all data',
@@ -50,8 +87,19 @@ function writeFileToExcel(data: { [x: string]: { [x: string]: any; }; }, output:
     // 设置表格首行数据
     firstRow.push(key);
     // 合并补充第一个文件不存在的key
-    datakeys = datakeys.concat(Object.keys(data[key]).filter(dk => !datakeys.includes(dk)));
+    datakeys = datakeys.concat(Object.keys(data[key]).filter(
+      dk => !datakeys.includes(dk) && ((typeof data[key][dk] !== 'object' && isMoToSo) || !isMoToSo)
+    ));
     Object.keys(data[key]).forEach(item => {
+      if (typeof data[key][item] === 'object') {
+        // 对象数据处理
+        if (isMoToSo) {
+          multilevelObjectDeconstruct(fileData, data[key][item], datakeys, item, i);
+        } else {
+          data[key][item] = JSON.stringify(data[key][item]);
+        }
+        return ;
+      }
       const dataIndex = fileData[0].data.findIndex(di => di[0] === item);
       // 初始每行数据，加入对应可以值
       if(dataIndex === -1) {
@@ -59,14 +107,15 @@ function writeFileToExcel(data: { [x: string]: { [x: string]: any; }; }, output:
         data[0] = item;
         fileData[0].data.push(data);
       };
+      const di = dataIndex !== -1 ? dataIndex : (fileData[0].data?.length - 1);
       // 补充缺少数据
-      if (i + 1 > fileData[0].data[dataIndex !== -1 ? dataIndex : (fileData[0].data?.length - 1)].length) {
-        const notDataNum = i + 1 - fileData[0].data[dataIndex !== -1 ? dataIndex : (fileData[0].data?.length - 1)].length;
+      if (i + 1 > fileData[0].data[di].length) {
+        const notDataNum = i + 1 - fileData[0].data[di].length;
         const data = new Array(notDataNum).fill('');
-        fileData[0].data[dataIndex !== -1 ? dataIndex : (fileData[0].data?.length - 1)] = fileData[0].data[dataIndex !== -1 ? dataIndex : (fileData[0].data?.length - 1)].concat(data);
+        fileData[0].data[di] = fileData[0].data[di].concat(data);
       }
       // 设置对应key的数据值
-      fileData[0].data[dataIndex !== -1 ? dataIndex : (fileData[0].data?.length - 1)].push(data[key][item]);
+      fileData[0].data[di].push(data[key][item]);
     });
   });
   console.log('文件写入中，请稍后...');
@@ -108,5 +157,8 @@ export function json2excel(options: OptionValues) {
   // 读取文件夹数据
   const filesData = readDirFilesData(options.input);
   // 将数据写入excel文件
-  writeFileToExcel(filesData, options.output);
+  writeFileToExcel(filesData, {
+    output: options.output,
+    isMoToSo: options.multilevelObjectDeconstruct
+  });
 }

@@ -6,15 +6,25 @@ import { isExportType, typeToName } from '../constants';
 import { format } from 'prettier';
 import { prettierConfig } from '../constants/prettierrc';
 
-function dataToJson(data: any[], {
+const stringToObject = (jsonData: any, str: string, value: any) => {
+  const keys = str.split('.');
+  keys?.reduce((accumulator: any, currentValue: any, currentIndex: number) => {
+    const val = keys.length - 1 === currentIndex ? value : jsonData[currentValue] ?? {};
+    return accumulator ? accumulator[currentValue] = val : jsonData[currentValue] = val;
+  }, null);
+}
+
+const dataToJson = (data: any[], {
   rule,
   key: isKey,
-  notMatchFilename
+  notMatchFilename,
+  isSoToMo
 }: {
-  rule: string,
-  key: boolean,
-  notMatchFilename: boolean
-}) {
+  rule: string;
+  key: boolean;
+  notMatchFilename: boolean;
+  isSoToMo: boolean;
+}) => {
   /**
    * excel读取规制解析，文件名为第一行(小写字母-大写字母 或 整个单元格内容)
    * rule 0:[4,15]表示第一列为语言key，第五列到第十九列为语言包数据，默认为0:[1,整行数据长度]
@@ -38,18 +48,30 @@ function dataToJson(data: any[], {
           jsonData[fileKeys[coli]] = {};  // 设置语言对象key
         });
       } else {
-        // 将第一行一下的数据生成语言json对象
+        // 将第一行以下的数据生成语言json对象
         if (isKey) {
           const data = row.splice(intervals[0], intervals[1] ?? row.length);
           fileKeys.forEach((filekey, i) => {
-            console.log(chalk.green(`${sheet.name} | ${filekey} | ${row[key as any]} | ${data[i] ?? ''}`));  // 打印数据日志
-            jsonData[filekey][row[key as any]] = data[i] ?? '';
+            if(!!data[i]) {
+              console.log(chalk.green(`${sheet.name} | ${filekey} | ${row[key as any]} | ${data[i]}`));  // 打印数据日志
+              if (isSoToMo && key?.includes('.')) {
+                stringToObject(jsonData[filekey], key, data[i]);
+              } else {
+                jsonData[filekey][row[key as any]] = data[i];
+              }
+            }
           });
         } else {
           row.splice(intervals[0], intervals[1] ?? row.length).forEach((col, coli) => {
-            console.log(chalk.green(`${sheet.name} | ${fileKeys[coli]} | ${row[key as any]} | ${col}`));  // 打印数据日志
             if(!fileKeys[coli] || !row[key as any]) return; // 没有文件key 或 数据key，跳过该列
-            jsonData[fileKeys[coli]][row[key as any]] = col;  // 设置每行数据到对应语言对象
+            if (!!col) {
+              console.log(chalk.green(`${sheet.name} | ${fileKeys[coli]} | ${row[key as any]} | ${col}`));  // 打印数据日志
+              if (isSoToMo && row[key as any]?.includes('.')) {
+                stringToObject(jsonData[fileKeys[coli]], row[key as any], col);
+              } else {
+                jsonData[fileKeys[coli]][row[key as any]] = col;  // 设置每行数据到对应语言对象
+              }
+            }
           });
         }
       }
@@ -58,7 +80,7 @@ function dataToJson(data: any[], {
   return jsonData;
 }
 
-function writeFile(jsonData: { [x: string]: any; }, output: string, add: any) {
+const writeFile = (jsonData: { [x: string]: any; }, output: string, add: any) => {
   // 获取输出路径及文件类型，默认为单前文件夹ts文件
   const [path, fileOrSuffix] = output.split('**');
   const [filename, suffix] = fileOrSuffix.split('.');
@@ -123,7 +145,8 @@ export function excel2json(options: OptionValues) {
   const jsonData = dataToJson(workSheetsFromFile, {
     rule: options.rule,
     key: options.key,
-    notMatchFilename: options.notMatchFilename
+    notMatchFilename: options.notMatchFilename,
+    isSoToMo: options.multilevelObjectDeconstruct
   });
   // 将对象写入文件
   writeFile(jsonData, options.output, options.add);
