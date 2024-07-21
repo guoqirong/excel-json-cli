@@ -52,7 +52,7 @@ const dataToJson = (data: any[], {
         if (isKey) {
           const data = row.splice(intervals[0], intervals[1] ?? row.length);
           fileKeys.forEach((filekey, i) => {
-            if(!!data[i]) {
+            if(!(data[i] === '' || data[i] === null || data[i] === undefined)) {
               console.log(chalk.green(`${sheet.name} | ${filekey} | ${row[key as any]} | ${data[i]}`));  // 打印数据日志
               if (isSoToMo && key?.includes('.')) {
                 stringToObject(jsonData[filekey], key, data[i]);
@@ -64,7 +64,7 @@ const dataToJson = (data: any[], {
         } else {
           row.splice(intervals[0], intervals[1] ?? row.length).forEach((col, coli) => {
             if(!fileKeys[coli] || !row[key as any]) return; // 没有文件key 或 数据key，跳过该列
-            if (!!col) {
+            if (!(col === '' || col === null || col === undefined)) {
               console.log(chalk.green(`${sheet.name} | ${fileKeys[coli]} | ${row[key as any]} | ${col}`));  // 打印数据日志
               if (isSoToMo && row[key as any]?.includes('.')) {
                 stringToObject(jsonData[fileKeys[coli]], row[key as any], col);
