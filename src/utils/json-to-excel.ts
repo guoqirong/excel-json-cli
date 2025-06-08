@@ -26,7 +26,7 @@ const readDirFilesData = (input: string) => {
       fileData = fileData.replace(/\;/g, '');
       try {
         const fns = file.split('.');
-        data[fns.splice(0, fns.length - 1).join('.')] = isExportType.includes(suffix) ? eval('(' + fileData.split('export default ')[1] + ')') : JSON.parse(fileData);
+        data[fns.splice(0, fns.length - 1).join('.') || file] = isExportType.includes(suffix) ? eval('(' + fileData.split('export default ')[1] + ')') : JSON.parse(fileData);
       } catch (error) {
         console.error(chalk.red(file, '该文件不是json，无法导出'))
       }
